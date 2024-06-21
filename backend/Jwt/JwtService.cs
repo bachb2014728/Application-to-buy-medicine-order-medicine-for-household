@@ -13,8 +13,8 @@ namespace backend.Jwt
         private readonly IConfiguration _configuration;
         private readonly UserManager<AppUser> _userManager;
         private readonly SymmetricSecurityKey _key;
-        private readonly ApplicationDBContext _context;
-        public JwtService(IConfiguration configuration, UserManager<AppUser> userManager,ApplicationDBContext context)
+        private readonly ApplicationDbContext _context;
+        public JwtService(IConfiguration configuration, UserManager<AppUser> userManager,ApplicationDbContext context)
         {
             _configuration = configuration;
             _userManager = userManager;
@@ -24,11 +24,15 @@ namespace backend.Jwt
 
         public string CreateToken(AppUser user)
         {
+            var userRole = _context.UserRoles.FirstOrDefault(x => x.UserId == user.Id);
+            var role = _context.Roles.FirstOrDefault(x => x.Id == userRole!.RoleId);
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Email, user.Email!),
-                new(JwtRegisteredClaimNames.GivenName, user.UserName!)
+                new(JwtRegisteredClaimNames.GivenName, user.UserName!),
+                new(ClaimTypes.Role, role!.NormalizedName!)
             };
+
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -48,11 +52,6 @@ namespace backend.Jwt
             return tokenHandler.WriteToken(token);
         }
 
-        public bool IsValidToken(string token, AppUser user)
-        {
-            throw new NotImplementedException();
-        }
-
         public string GetUsernameFromToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -70,15 +69,25 @@ namespace backend.Jwt
             var jwtToken = handler.ReadJwtToken(token);
 
             // Lấy thời gian hết hạn từ token
-            var expiryDateUnix = jwtToken.Payload.Exp.Value;
+            var expiryDateUnix = jwtToken.Payload.Expiration; // Sử dụng Expiration thay vì Exp
+
+            // Kiểm tra xem expiryDateUnix có null không
+            if (!expiryDateUnix.HasValue)
+            {
+                throw new InvalidOperationException("Token không có thời gian hết hạn.");
+            }
 
             // Chuyển đổi thời gian hết hạn từ dạng Unix timestamp sang DateTime
-            var expiryDate = DateTimeOffset.FromUnixTimeSeconds(expiryDateUnix).UtcDateTime;
+            var expiryDate = DateTimeOffset.FromUnixTimeSeconds(expiryDateUnix.Value).UtcDateTime;
 
             // So sánh thời gian hết hạn với thời gian hiện tại
             return expiryDate < DateTime.UtcNow;
         }
-
-
+        public AppUser ToUserFormToken(string authHeader){
+            var token = authHeader["Bearer ".Length..].Trim();
+            var username = GetUsernameFromToken(token) ?? throw new ApplicationException(token + " không đúng");
+            var user = _userManager.Users.FirstOrDefault(x => x.UserName == username!.ToLower()) ?? throw new ApplicationException("Không tìm thấy người dùng");
+            return user;
+        }
     }
 }

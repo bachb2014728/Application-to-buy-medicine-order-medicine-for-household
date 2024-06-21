@@ -1,4 +1,6 @@
 using backend.Dto.Auth;
+using backend.Dto.Store;
+using backend.Helper;
 using backend.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +9,10 @@ namespace backend.Controller
 {
     [ApiController]
     [Route("api/v1/auth")]
-    public class AuthController(IAuthentication authentication) : ControllerBase
+    public class AuthController(IAuthentication authentication, ConvertInformation convert) : ControllerBase
     {
         private readonly IAuthentication _authentication = authentication;
+        private readonly ConvertInformation _convert = convert;
 
         [HttpPost("register")]
         [AllowAnonymous]
@@ -33,57 +36,48 @@ namespace backend.Controller
 
             return Ok(response);
         }
-        [HttpPost("upgrade")]
+        [HttpPost("loginAdmin")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginAdmin(LoginDto loginDto)
+        {
+            if (!ModelState.IsValid){return BadRequest(ModelState);}
+            var response = await _authentication.LoginAdmin(loginDto);
+
+            return Ok(response);
+        }
+        [HttpPost("switch")]
         [Authorize]
-        public async Task<IActionResult> Upgrade([FromBody] NewStoreDto newStoreDto){
+        public async Task<IActionResult> Switch([FromBody] ModeDto mode)
+        {
+            if (!ModelState.IsValid){return BadRequest(ModelState);}
+            var response = await _authentication.Switch(mode);
+            return Ok(response);
+        }
+
+        [HttpGet("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout(){
             if (!ModelState.IsValid){
                 return BadRequest(ModelState);
             }
-            var authHeader = HttpContext.Request.Headers.Authorization.ToString();
-
-            var token = authHeader["Bearer ".Length..].Trim();
-            var response = await _authentication.Upgrade(newStoreDto,token);
+            var response = await _authentication.Logout();
             return Ok(response);
         }
-
-        [HttpGet("switch")]
-        [Authorize]
-        public async Task<IActionResult> Switch()
-        {
-            if (!ModelState.IsValid){
-                    return BadRequest(ModelState);
-                }
-            var authHeader = HttpContext.Request.Headers.Authorization.ToString();
-
-            var token = authHeader["Bearer ".Length..].Trim();
-            var response = await _authentication.Switch(token);
-
-            return Ok(response);
-        }
-        
         [HttpGet("profile")]
         [Authorize]
         public async Task<IActionResult> Profile(){
             if (!ModelState.IsValid){
                     return BadRequest(ModelState);
             }
-            var authHeader = HttpContext.Request.Headers.Authorization.ToString();
-
-            var token = authHeader["Bearer ".Length..].Trim();
-            var response = await _authentication.Profile(token);
-
-            if (response is StoreDto store)
+        
+            var response = await _authentication.Profile();
+            return response switch
             {
-                return Ok(store);
-            }
-            else if (response is CustomerDto customer)
-            {
-                return Ok(customer);
-            }
-            else
-            {
-                return BadRequest("Không tìm thế kiểu DTO");
-            }
+                CustomerDto customer => Ok(customer),
+                StoreDto store => Ok(store),
+                AdminDto admin => Ok(admin),
+                _ => BadRequest("Không tìm thế kiểu DTO")
+            };
         }
     }
 }

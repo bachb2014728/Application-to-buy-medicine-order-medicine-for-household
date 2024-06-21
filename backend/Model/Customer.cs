@@ -12,6 +12,9 @@ namespace backend.Model
         public string? Address { get; set; }
         public DateTime? Birthday { get; set; }
         public string? Gender { get; set; }
-        public AppUser? User { get; set; } = new AppUser();
+        
+        public List<Cart>? Carts { get; set; } = [];
+        public string? UserId { get; set; }
+        public AppUser? User { get; set; }
     }
 }

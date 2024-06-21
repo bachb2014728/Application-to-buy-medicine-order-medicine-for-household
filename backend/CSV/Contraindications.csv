@@ -1,0 +1,51 @@
+Id,Name,Info
+1,Hypersensitivity,Không dùng cho những người có tiền sử dị ứng với thành phần của thuốc.
+2,Pregnancy,Không dùng cho phụ nữ đang mang thai trừ khi lợi ích vượt qua rủi ro.
+3,Breastfeeding,Không dùng cho phụ nữ đang cho con bú trừ khi lợi ích vượt qua rủi ro.
+4,Liver Disease,Không dùng cho những người mắc bệnh gan nặng.
+5,Kidney Disease,Không dùng cho những người mắc bệnh thận nặng.
+6,Heart Disease,Không dùng cho những người mắc bệnh tim.
+7,High Blood Pressure,Không dùng cho những người mắc bệnh huyết áp cao.
+8,Asthma,Không dùng cho những người mắc bệnh hen suyễn.
+9,Stomach Ulcers,Không dùng cho những người mắc bệnh loét dạ dày.
+10,Diabetes,Không dùng cho những người mắc bệnh tiểu đường.
+11,Glaucoma,Không dùng cho những người mắc bệnh glaucoma.
+12,Epilepsy,Không dùng cho những người mắc bệnh động kinh.
+13,Bleeding Disorders,Không dùng cho những người mắc bệnh rối loạn đông máu.
+14,Gout,Không dùng cho những người mắc bệnh gout.
+15,Hyperthyroidism,Không dùng cho những người mắc bệnh tăng hoạt tuyến giáp.
+16,Hypothyroidism,Không dùng cho những người mắc bệnh suy giáp.
+17,Parkinson's Disease,Không dùng cho những người mắc bệnh Parkinson.
+18,Psychiatric Disorders,Không dùng cho những người mắc bệnh tâm thần.
+19,Prostate Problems,Không dùng cho những người mắc bệnh về tuyến tiền liệt.
+20,Peptic Ulcer,Không dùng cho những người mắc bệnh loét dạ dày tá tràng.
+21,Tuberculosis,Không dùng cho những người mắc bệnh lao.
+22,HIV/AIDS,Không dùng cho những người mắc bệnh HIV/AIDS.
+23,Cancer,Không dùng cho những người mắc bệnh ung thư.
+24,Bone Marrow Depression,Không dùng cho những người mắc bệnh suy tủy xương.
+25,Coagulation Disorders,Không dùng cho những người mắc bệnh rối loạn đông máu.
+26,Cystic Fibrosis,Không dùng cho những người mắc bệnh xơ nang.
+27,Dementia,Không dùng cho những người mắc bệnh mất trí nhớ.
+28,Depression,Không dùng cho những người mắc bệnh trầm cảm.
+29,Down Syndrome,Không dùng cho những người mắc hội chứng Down.
+30,Dyslexia,Không dùng cho những người mắc bệnh khó đọc.
+31,Eczema,Không dùng cho những người mắc bệnh chàm.
+32,Endometriosis,Không dùng cho những người mắc bệnh buồng trứng.
+33,Fibromyalgia,Không dùng cho những người mắc bệnh đau cơ.
+34,Gallstones,Không dùng cho những người mắc bệnh sỏi mật.
+35,Hemophilia,Không dùng cho những người mắc bệnh hemophilia.
+36,Hepatitis,Không dùng cho những người mắc bệnh viêm gan.
+37,Herpes,Không dùng cho những người mắc bệnh herpes.
+38,Huntington's Disease,Không dùng cho những người mắc bệnh Huntington.
+39,Hyperactivity Disorder,Không dùng cho những người mắc bệnh tăng động.
+40,Hypertension,Không dùng cho những người mắc bệnh tăng huyết áp.
+41,Hypotension,Không dùng cho những người mắc bệnh hạ huyết áp.
+42,Inflammatory Bowel Disease,Không dùng cho những người mắc bệnh viêm ruột.
+43,Insomnia,Không dùng cho những người mắc bệnh mất ngủ.
+44,Irritable Bowel Syndrome,Không dùng cho những người mắc bệnh ruột kích thích.
+45,Jaundice,Không dùng cho những người mắc bệnh vàng da.
+46,Kidney Stones,Không dùng cho những người mắc bệnh sỏi thận.
+47,Leukemia,Không dùng cho những người mắc bệnh bạch cầu.
+48,Lupus,Không dùng cho những người mắc bệnh lupus.
+49,Lyme Disease,Không dùng cho những người mắc bệnh Lyme.
+50,Seizure Disorders,Không dùng cho những người mắc bệnh co giật.

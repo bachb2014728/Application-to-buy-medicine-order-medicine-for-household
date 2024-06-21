@@ -4,6 +4,6 @@ namespace backend.Model
 {
     public class AppUser : IdentityUser
     {
-        public string? ActivateBy { get; set; } 
+        public string? ActivateBy { get; set; }
     }
 }

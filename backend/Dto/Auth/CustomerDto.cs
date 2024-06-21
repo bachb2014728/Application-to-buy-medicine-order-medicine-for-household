@@ -1,4 +1,7 @@
 
+using backend.Dto.Cart;
+using backend.Dto.Store;
+
 namespace backend.Dto.Auth
 {
     public class CustomerDto
@@ -11,5 +14,8 @@ namespace backend.Dto.Auth
         public string? Username { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? RoleName { get; set; }
+        public List<StoreItem>? Stores { get; set; } = [];
+        public List<CartItem>? Carts { get; set; } = [];
     }
 }

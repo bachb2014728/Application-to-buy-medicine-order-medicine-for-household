@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
 namespace backend.Error
 {
@@ -17,10 +12,6 @@ namespace backend.Error
         }
 
         public StoreNotFoundException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
-
-        protected StoreNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

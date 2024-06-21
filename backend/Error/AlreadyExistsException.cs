@@ -1,6 +1,4 @@
 
-using System.Runtime.Serialization;
-
 namespace backend.Error
 {
     public class AlreadyExistsException : Exception
@@ -14,10 +12,6 @@ namespace backend.Error
         }
 
         public AlreadyExistsException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
-
-        protected AlreadyExistsException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

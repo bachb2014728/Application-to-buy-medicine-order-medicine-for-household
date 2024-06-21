@@ -7,5 +7,6 @@ namespace backend.Jwt
         string CreateToken(AppUser user);
         string GetUsernameFromToken(string token);
         bool IsTokenExpired(string token);
+        AppUser ToUserFormToken(string authHeader);
     }
 }

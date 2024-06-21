@@ -30,6 +30,18 @@ namespace backend.Error.Handler
                     detail.Status = (int)HttpStatusCode.NotFound;
                     detail.Detail = exception.Message;
                     break;
+                case NotFoundException:
+                    detail.Status = (int)HttpStatusCode.NotFound;
+                    detail.Detail = exception.Message;
+                    break;
+                case RoleNotFoundException:
+                    detail.Status = (int)HttpStatusCode.Forbidden;
+                    detail.Detail = exception.Message;
+                    break;
+                case InvalidFormatException:
+                    detail.Status = (int)HttpStatusCode.BadRequest;
+                    detail.Detail = exception.Message;
+                    break;
                 default:
                     detail.Status = (int)HttpStatusCode.InternalServerError;
                     detail.Detail = $"API lỗi : {exception.Message}";

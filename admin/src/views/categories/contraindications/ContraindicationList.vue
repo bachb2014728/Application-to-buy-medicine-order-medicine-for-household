@@ -1,0 +1,153 @@
+<template>
+  <div class="row">
+    <div class="card col-sm-8">
+      <h5 class="card-title">Danh sách</h5>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Chống chỉ định</th>
+            <th class="col">Thông tin chi tiết </th>
+            <th scope="col"></th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-if="contraindications" v-for="(item, index) in contraindications" :key="index" @click="selectItem(item,index)">
+            <th scope="row">{{index+1}}</th>
+            <td>{{item.name}}</td>
+            <td>{{item.info}}</td>
+            <td class="text-center">
+              <a @click="confirmDelete(item)" class="btn btn-danger btn-sm me-3">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Thêm chống chỉ định</h5>
+          <form class="g-3" @submit.prevent="createItem" >
+            <div class="mb-3">
+              <input type="text" v-model="contraindication.name" class="form-control" placeholder="Tên chống chỉ định">
+            </div>
+            <div class="mb-3">
+              <input type="text" v-model="contraindication.info" class="form-control" placeholder="Thông tin (nếu có)">
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-sm btn-primary" style="margin-right: 5px">Thêm mới</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="resetForm">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="card" >
+        <div class="card-body">
+          <h5 class="card-title">Cập nhật chống chỉ định</h5>
+          <form class="g-3" @submit.prevent="updateItem" >
+            <div class="mb-3">
+              <input type="text" v-model="data.name" class="form-control" placeholder="Tên chống chỉ định">
+            </div>
+            <div class="mb-3">
+              <input type="text" v-model="data.info" class="form-control" placeholder="Thông tin (nếu có)">
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-sm btn-primary" style="margin-right: 5px">Cập nhật</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import {useToast} from "vue-toastification";
+import {onMounted, reactive, ref} from "vue";
+import ContraindicationService from "@/services/contraindication.service.js";
+
+export default {
+  name: "ContraindicationList",
+  mounted() {
+    document.title = 'Danh sách chống chỉ định'
+  },
+  setup() {
+    const toast = useToast();
+    const contraindication = reactive({name:'',info:''})
+    const data = reactive({id:'',name:'',info:''})
+    const contraindications = ref([]);
+    onMounted( async () => {
+      const response = await ContraindicationService.getAll();
+      contraindications.value = response.data
+    });
+    const selectItem = (item,index) => {
+      data.id = item.id;
+      data.name = item.name;
+      data.info = item.info;
+    };
+    return {toast, contraindications, selectItem,contraindication,data}
+  },
+  methods: {
+    confirmDelete(item) {
+      if (window.confirm('Bạn có chắc chắn xóa chống chỉ định này không ?')) {
+        this.deleteItem(item);
+      }
+    },
+    resetForm() {
+      this.contraindication.name = '';
+      this.contraindication.info = '';
+    },
+    async deleteItem(item) {
+      let index = this.contraindications.indexOf(item);
+      if (index > -1) {
+        this.contraindications.splice(index, 1);
+        try {
+          const response = await ContraindicationService.deleteOne(item.id);
+          if (response.status === 200) {
+            this.data = {id: '', name: '', info: ''};
+            this.toast.success(response.data.message)
+          } else {
+            this.toast.error("Xảy ra lỗi khi xóa chống chỉ định.")
+          }
+        }catch (e) {
+          this.toast.error(e.response.data.detail)
+        }
+      }else{
+        this.toast.error("Xảy ra lỗi khi xóa chống chỉ định.")
+      }
+    },
+    async createItem(){
+      await ContraindicationService.create(this.contraindication).then( async response =>{
+        this.toast.success("Thêm mới chống chỉ định thành công.")
+        this.contraindications.push(response.data)
+      }).catch(err=>{
+        this.toast.error("Lỗi khi thêm chống chỉ định.");
+      })
+    },
+    async updateItem(){
+      let index = this.contraindications.findIndex(item => item.id === this.data.id);
+      try {
+        const response = await ContraindicationService.update(this.data.id, this.data);
+        this.contraindications.splice(index, 1);
+        if (response.status === 200) {
+          this.contraindications.splice(index,0,response.data)
+          this.toast.success("Cập nhật chống chỉ định thành công.")
+        } else {
+          this.toast.error(response.data.detail)
+        }
+      }catch (e) {
+        this.toast.error(e.response.data.detail)
+      }
+    }
+  }
+}
+</script>
+<style scoped>
+.card-body {
+  max-height: 25rem;
+  overflow-y: auto;
+}
+</style>
