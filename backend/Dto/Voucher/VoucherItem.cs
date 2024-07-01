@@ -10,4 +10,5 @@ public class VoucherItem
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public bool IsGlobal { get; set; }
+    public int? StoreId { get; set; }
 }

@@ -48,25 +48,17 @@
         </form>
       </div>
     </div>
-    <div class="card col-sm-4">
-      <h5 class="card-title">Hình ảnh sản phẩm</h5>
-      <div class="grid-container">
-        <div class="grid-item p-2" v-for="(image,index) in listImage">
-          <img :src="'data:image/jpeg;base64,'+image.file" alt="" id="uploadedAvatar" />
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Hình ảnh sản phẩm</h5>
+          <div class="grid-container">
+            <div class="grid-item p-2" v-for="(image,index) in listImage">
+              <img :src="'data:image/jpeg;base64,'+image.file" alt="" id="uploadedAvatar" />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="card col-sm-8" v-if="item">
-      <div class="card-body">
-        <h5 class="card-title">Giới thiệu thuốc : {{item.name}}</h5>
-        <p v-if="item.content">{{item.content}}</p>
-      </div>
-    </div>
-    <div class="card col-sm-4">
-      <h5 class="card-title">Bình luận</h5>
-      <span>Chưa có bình luận nào</span>
     </div>
   </div>
 </template>
@@ -111,7 +103,7 @@ export default {
 <style scoped>
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   gap: 10px;
 }
 .grid-item img {

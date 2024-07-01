@@ -101,11 +101,13 @@ builder.Services.AddScoped<IAuthentication, AuthenticationService>();
 builder.Services.AddScoped<ICategory,CategoryService>();
 builder.Services.AddScoped<IStore,StoreService>();
 builder.Services.AddScoped<IProduct, ProductService>();
-
+builder.Services.AddScoped<ICustomer, CustomerService>();
 builder.Services.AddScoped<INotification, NotificationService>();
 builder.Services.AddScoped<IVoucher, VoucherService>();
 builder.Services.AddScoped<IOrder, OrderService>();
+builder.Services.AddScoped<IReceiver, ReceiverService>();
 
+builder.Services.AddScoped<IComment, CommentService>();
 builder.Services.AddScoped<IUse, UseService>();
 builder.Services.AddScoped<IManufacturer, ManufacturerService>();
 builder.Services.AddScoped<IDosageForm, DosageFormService>();

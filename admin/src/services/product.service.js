@@ -11,6 +11,9 @@ class ProductService {
             }
         }));
     }
+    async getAllByStore(url){
+        return (await this.api.get(`/get-all-product-by-store/${url}`))
+    }
     async create(data){
         return (await this.api.post("/",data,{
             headers: {

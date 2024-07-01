@@ -18,6 +18,7 @@
           </div>
         </div>
         <div class="position-absolute top-0 end-0 translate-middle-y" style="right: -50%;">
+          <span class="badge bg-success me-2" v-if="item.status">Hiển thị</span>
           <span class="badge bg-warning me-2">Số lượng tồn kho : {{item.quantity}}</span>
         </div>
       </div>

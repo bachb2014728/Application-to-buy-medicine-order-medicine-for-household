@@ -15,9 +15,9 @@ class AuthService {
         }
         return response;
     }
-    async profile(){
+    async profileAdmin(){
         try {
-            return (await this.api.get("/profile", {
+            return (await this.api.get("/profileAdmin", {
                 headers: {
                     'Authorization': `Bearer ${this.token}`
                 }

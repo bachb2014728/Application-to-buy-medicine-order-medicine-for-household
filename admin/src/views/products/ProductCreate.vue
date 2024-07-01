@@ -170,11 +170,12 @@ export default {
       this.data.contraindications=this.listContraindication.map(item => item.id);
       this.data.dosageForms=this.listDosage.map(item => item.id);
       this.data.images=this.listImages.map(item=>item.id);
+      this.data.status = true;
       try {
         ProductService.create(this.data).then(response=>{
           this.toast.success("Thêm sản phẩm thành công.")
         }).catch(err=>{
-          console.log(err.reponse.data);
+          console.log(err.response.data);
         })
       }catch (e) {
         this.toast.error("Thêm sản phẩm thất bại")

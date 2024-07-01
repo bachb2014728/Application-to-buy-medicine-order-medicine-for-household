@@ -25,6 +25,7 @@ namespace backend.Service
             var listItem = await _context.Products
                 .Include(x=>x.CreatedBy)
                 .Include(x=>x.Images)
+                .Where(x=>x.Status == true)
                 .ToListAsync();
             if (listItem.Count == 0) 
             {
@@ -65,7 +66,8 @@ namespace backend.Service
         public async Task<ProductDto?> Update(UpdateProductRequest updateProductRequest, int id)
         {
             var product = await ProductExist(id);
-            var nameHaveExist = await _context.Products.Where(x => x.Id != id)
+            var nameHaveExist = await _context.Products
+                .Where(x => x.Id != id)
                 .FirstOrDefaultAsync(x => x.Name == updateProductRequest.Name);
             if (nameHaveExist != null)
             {
@@ -100,7 +102,7 @@ namespace backend.Service
         public async Task<ApiObject?> Delete(int id)
         {
             var product = await ProductExist(id);
-            _context.Products.Remove(product);
+            product.Status = false;
             await _context.SaveChangesAsync();
             return new ApiObject()
             {
@@ -118,12 +120,88 @@ namespace backend.Service
                 .Include(x=>x.Categories)
                 .Include(x=>x.CreatedBy)
                 .Include(x=>x.Images)
+                .Where(x=>x.Status == true)
                 .FirstOrDefaultAsync(x => x.URL == url);
             if (product == null)
             {
                 throw new NotFoundException($"Không tìm thấy dữ liệu với : {url}");
             }
             return await ToProductDto(product);
+        }
+
+        public async Task<IEnumerable<ProductItem>?> GetAllByStore(string storeUrl)
+        {
+            var store = await _context.Stores.FirstOrDefaultAsync(x => x.URL == storeUrl);
+            if (store == null)
+            {
+                throw new NotFoundException("không tìm thấy cửa hàng.");
+            }
+            var products = await _context.Products
+                .Include(x=>x.CreatedBy)
+                .Include(x=>x.Images)
+                .Where(x => x.CreatedBy == store).ToListAsync();
+            if (products.Count == 0) 
+            {
+                throw new NotFoundException("Không tìm thấy dữ liệu.");
+            }
+            return products.Select(ToProductItem);
+        }
+
+        public async Task<ProductDto?> UpdatePriceAndSale(UpdatePrice updatePrice, int id)
+        {
+            var product = await _context.Products
+                .Include(x=>x.Manufacturer)
+                .Include(x=>x.Contraindications)
+                .Include(x=>x.DosageForms)
+                .Include(x=>x.Uses)
+                .Include(x=>x.Categories)
+                .Include(x=>x.CreatedBy)
+                .Include(x=>x.Images)
+                .Where(x=>x.Status == true)
+                .FirstOrDefaultAsync(x => x.Id == updatePrice.ProductId);
+            if (product == null)
+            {
+                throw new NotFoundException("không tìm thấy sản phẩm.");
+            }
+            product.Price = updatePrice.Price;
+            product.Sale = updatePrice.Sale;
+            await _context.SaveChangesAsync();
+            return await ToProductDto(product);
+        }
+
+        public async Task<ProductDto?> UpdateQuantity(UpdateQuantity updateQuantity, int id)
+        {
+            var product = await _context.Products
+                .Include(x=>x.Manufacturer)
+                .Include(x=>x.Contraindications)
+                .Include(x=>x.DosageForms)
+                .Include(x=>x.Uses)
+                .Include(x=>x.Categories)
+                .Include(x=>x.CreatedBy)
+                .Include(x=>x.Images)
+                .Where(x=>x.Status == true)
+                .FirstOrDefaultAsync(x => x.Id == updateQuantity.ProductId);
+            if (product == null)
+            {
+                throw new NotFoundException("không tìm thấy sản phẩm.");
+            }
+            product.Quantity = updateQuantity.Quantity;
+            await _context.SaveChangesAsync();
+            return await ToProductDto(product);
+            
+        }
+
+        public async Task<object?> ChangeStatus(IsChangeStatus isChangeStatus, int id)
+        {
+            var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            if (product == null)
+            {
+                throw new NotFoundException("Không tìm thấy dữ liệu");
+            }
+
+            product.Status = !product.Status;
+            await _context.SaveChangesAsync();
+            return new ApiObject() { Message = "Thay đổi trạng thái thành công" };
         }
 
         public async Task<ProductDto> Create(CreateProductRequest createProductRequest)
@@ -141,8 +219,7 @@ namespace backend.Service
                 throw new AlreadyExistsException($"{createProductRequest.URL} đã tồn tại.");
             }
 
-            var store = await _context.Stores.FirstOrDefaultAsync(x => 
-                x.CreatedBy == _convert.ToAppUser(GlobalVariables.Token) || x.Id == createProductRequest.StoreId);
+            var store = await _context.Stores.FirstOrDefaultAsync(x => x.Id == createProductRequest.StoreId);
             if (store == null)
             {
                 throw new NotFoundException("Không tìm thấy dữ liệu nhà thuốc.");
@@ -155,6 +232,7 @@ namespace backend.Service
                 Quantity = createProductRequest.Quantity,
                 Price = createProductRequest.Price,
                 Sale = createProductRequest.Sale,
+                Status = createProductRequest.Status,
                 Content = createProductRequest.Content,
                 CreatedOn = DateTime.UtcNow,
                 CreatedBy = store,

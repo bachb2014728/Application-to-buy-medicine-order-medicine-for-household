@@ -1,10 +1,12 @@
 
+using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json;
 using backend.Data;
 using backend.Helper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Jwt
@@ -46,16 +48,18 @@ namespace backend.Jwt
 
             await _next(context);
         }
-
+        
         private async Task<bool> IsValidToken(HttpContext context, string token)
         {
             // Kiểm tra token có tồn tại trong cơ sở dữ liệu hay không
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                var tokenNow = dbContext.Tokens.FirstOrDefault(t => t.Code == token);
+                var tokenNow = await dbContext.Tokens
+                    .Where(x=>x.IsActive == true)
+                    .FirstOrDefaultAsync(t => t.Code == token);
                
-                if (tokenNow?.IsActive == false || tokenNow == null)
+                if (tokenNow == null)
                 {
                     await DenyAccess(context, "Token không tồn tại hoặc đã hết hạn.");
                     return false;

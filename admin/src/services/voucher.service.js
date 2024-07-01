@@ -11,6 +11,13 @@ class VoucherService {
             }
         }));
     }
+    async getAllVoucherOfStore(id){
+        return (await this.api.get(`/get-all-voucher-of-store/${id}`,{
+            headers: {
+                'Authorization': `Bearer ${this.token}`
+            }
+        }));
+    }
     async create(data){
         return (await this.api.post("/",data,{
             headers: {

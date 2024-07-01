@@ -3,6 +3,7 @@ using backend.Data;
 using backend.Dto.Image;
 using backend.Error;
 using backend.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace backend.Controller
 {
     [ApiController]
     [Route("api/v1/images")]
+    [AllowAnonymous]
     public class ImageController(ApplicationDbContext context) : ControllerBase
     {
         private readonly ApplicationDbContext _context = context;

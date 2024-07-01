@@ -8,19 +8,19 @@
             <th>STT</th>
             <th>Tên nhà thuốc</th>
             <th>Ảnh đại diện</th>
-            <th>Người theo dõi</th>
             <th>Trạng thái</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody class="table-border-bottom-0">
-        <tr v-if="listItem" v-for="(item, index) in listItem" :key="index">
+        <tr v-for="(item, index) in listItem" :key="index">
           <td>{{index+1}}</td>
           <td><span class="fw-medium">{{item.name}}</span></td>
-          <td v-if="images[index]">
-            <img :src="'data:image/jpeg;base64,' + images[index].file" alt="Avatar" class="rounded-circle" style="width: 1.5rem">
+          <td >
+            <img v-if="images[index]" :src="'data:image/jpeg;base64,' + images[index].file"
+                 alt="Avatar" class="rounded-circle" style="width: 1.5rem">
+            <img v-else src="@/assets/image/user.png" alt="Avatar" class="rounded-circle" style="width: 1.5rem">
           </td>
-          <td>{{item.followers.length}} follower</td>
           <td>
             <span v-if="item.status === 'ACTIVE'" class="badge bg-label-success me-1">Hoạt động</span>
             <span v-if="item.status === 'BLOCK'" class="badge bg-label-danger me-1">Tạm khóa</span>
@@ -40,6 +40,9 @@
         </tbody>
       </table>
     </div>
+    <div v-else class="text-center mt-3">
+      <p>Không có tài khoản nào</p>
+    </div>
   </div>
 </template>
 <script>
@@ -47,6 +50,8 @@ import {onMounted, ref} from "vue";
 import StoreService from "@/services/store.service.js";
 import ImageService from "@/services/image.service.js";
 import {useToast} from "vue-toastification";
+import ProductService from "@/services/product.service.js";
+import OrderService from "@/services/order.service.js";
 
 export default {
   name: "MyStore",
@@ -58,13 +63,19 @@ export default {
     const images = ref([])
     const toast = useToast()
     onMounted(async ()=>{
-      await StoreService.getMyStore().then(response=>{
+      StoreService.getMyStore().then(response=>{
         listItem.value = response.data
         for(let i = 0 ; i < response.data.length ; i++){
           let id = response.data[i].avatar;
           ImageService.getOne(id).then(res=>{
             images.value.push(res.data)
           })
+        }
+      }).catch(err=>{
+        if (err.response.status === 404){
+          message.value = err.response.data.detail
+        }else {
+          this.toast.success("Lỗi khi tải dữ liệu.")
         }
       })
     })

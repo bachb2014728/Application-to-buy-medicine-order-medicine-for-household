@@ -8,12 +8,12 @@ namespace backend.Controller
 {
     [ApiController]
     [Route("api/v1/store")]
-    [Authorize]
     public class StoreController(IStore service) : ControllerBase
     {
         private readonly IStore _service = service;
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var stores = await _service.GetAll();
@@ -21,12 +21,14 @@ namespace backend.Controller
         }
         [HttpGet]
         [Route("my-store")]
+        [Authorize]
         public async Task<IActionResult> GetMyStores(){
             var stores = await _service.GetAllByUser();
             return Ok(stores.Select(ToStoreDto));
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetOne(int id)
         {
             var store = await _service.GetOne(id);
@@ -35,12 +37,14 @@ namespace backend.Controller
         }
         [HttpGet]
         [Route("URL/{url}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUrl([FromRoute] string url){
             var response = await _service.GetOneByURL(url);
             return Ok(response);
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Add([FromBody] StoreCreate store)
         {
             var response = await _service.Post(store);
@@ -48,18 +52,21 @@ namespace backend.Controller
         }
 
         [HttpPut("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> Update([FromRoute] int id,[FromBody] StoreUpdate store)
         {
             var response = await _service.Update(store,id);
             return Ok(response);
         }
         [HttpPut("URL/{url}/info")]
+        [Authorize]
         public async Task<IActionResult> UpdateByUrl([FromRoute] string url,[FromBody] StoreUpdate store)
         {
             var response = await _service.UpdateInfo(store,url);
             return Ok(response);
         }
         [HttpPut("URL/{url}/avatar")]
+        [Authorize]
         public async Task<IActionResult> UpdateAvatar([FromRoute] string url,[FromBody] AddImage image)
         {
             var imageBytes = await _service.UpdateAvatar(image,url);
@@ -67,6 +74,7 @@ namespace backend.Controller
         }
         
         [HttpPut("URL/{url}/background")]
+        [Authorize]
         public async Task<IActionResult> UpdateBackground([FromRoute] string url,[FromBody] AddImage image)
         {
             var response = await _service.UpdateBackground(image,url);
@@ -74,6 +82,7 @@ namespace backend.Controller
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _service.DeleteOne(id);

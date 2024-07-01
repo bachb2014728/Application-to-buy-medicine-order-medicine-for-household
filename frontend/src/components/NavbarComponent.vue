@@ -82,66 +82,31 @@
     </div>
   </div>
 
-  <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart" aria-labelledby="My Cart">
-    <div class="offcanvas-header mt-3">
-      <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      <div class="order-md-last">
-        <h4 class="d-flex justify-content-between align-items-center mb-4">
-          <span>Giỏ hàng</span>
-<!--          <span class="badge bg-primary rounded-circle pt-2 text-white">0</span>-->
-        </h4>
-
-        <ul class="list-group mb-4">
-<!--          <li class="list-group-item d-flex justify-content-between align-items-center py-3 lh-sm">-->
-<!--            <div>-->
-<!--              <h6 class="my-0">Marketing Course</h6>-->
-<!--              <small class="text-body-secondary">Brief description</small>-->
-<!--            </div>-->
-<!--            <span class="text-body-secondary">$120</span>-->
-<!--          </li>-->
-<!--          <li class="list-group-item d-flex justify-content-between align-items-center py-3 lh-sm">-->
-<!--            <div>-->
-<!--              <h6 class="my-0">Strategy Course</h6>-->
-<!--              <small class="text-body-secondary">Brief description</small>-->
-<!--            </div>-->
-<!--            <span class="text-body-secondary">$80</span>-->
-<!--          </li>-->
-<!--          <li class="list-group-item d-flex justify-content-between align-items-center py-3 lh-sm">-->
-<!--            <div>-->
-<!--              <h6 class="my-0">Digital Course</h6>-->
-<!--              <small class="text-body-secondary">Brief description</small>-->
-<!--            </div>-->
-<!--            <span class="text-body-secondary">$50</span>-->
-<!--          </li>-->
-<!--          <li class="list-group-item d-flex justify-content-between align-items-center py-3">-->
-<!--            <span class="fw-bold">Total (USD)</span>-->
-<!--            <strong>$250</strong>-->
-<!--          </li>-->
-        </ul>
-
-<!--        <div class="d-grid my-5">-->
-<!--          <button class="btn btn-primary px-5 py-3" type="submit">Mua ngay</button>-->
-<!--        </div>-->
-      </div>
-    </div>
-  </div>
-
   <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasSearch"
        aria-labelledby="Search">
     <div class="offcanvas-header mt-3">
       <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-
       <div class="order-md-last">
         <h4 class="text-primary text-uppercase mb-3">Tìm kiếm</h4>
         <div class="search-bar border rounded-2 border-dark-subtle">
-          <form id="search-form" class="text-center d-flex align-items-center" action="" method="">
-            <input type="text" class="form-control border-0 bg-transparent" placeholder="Nhập từ khóa cần tìm" />
-            <iconify-icon icon="tabler:search" class="fs-4 me-3"></iconify-icon>
+          <form id="search-form" class="text-center d-flex align-items-center">
+            <input type="text" class="form-control border-0 bg-transparent"
+                   v-model="inputData" spellcheck="false" data-ms-editor="true"
+                   @input="fetchData"
+                   placeholder="Nhập từ khóa cần tìm" />
           </form>
+        </div>
+        <div class="demo-inline-spacing mt-3" v-if="cardData && cardData.length">
+
+          <div class="list-group">
+            <router-link :to="`/products/${product.url}`" v-for="(product,index) in cardData" :key="index"
+                         class="list-group-item list-group-item-action flex-column align-items-start">
+              <p class="mb-1">{{product.name}}</p>
+              <small>Giá bán : {{product.price}} - Số lượng : {{product.quantity}}</small>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -152,28 +117,8 @@
       <div class="d-flex justify-content-between text-white py-1 m-0">
         <nav class="header-nav">
           <ul class="d-flex align-items-center">
-
             <li class="nav-item dropdown">
-              <router-link to="/store/create" class="text-white " style="text-decoration: none;">Trở thành Nhà Bán Thuốc</router-link>
-            </li>
-            <li class="m-1 "> | </li>
-            <li class="nav-item dropdown">
-              <div class="btn-group">
-                <a class="nav-link d-flex align-items-center pe-0 text-white" href="#" data-bs-toggle="dropdown">
-                  <span class="dropdown-toggle">Kênh nhà thuốc</span>
-                </a>
-                <ul v-if="auth" class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile" >
-                  <li class="dropdown-header">Chọn tài khoản cần chuyển đổi</li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li v-if="listMyStore" v-for="(item, index) in listMyStore" :key="index">
-                    <a class="dropdown-item d-flex align-items-center" @click="openModal(item)">
-                      <span>{{item.name}}</span>
-                    </a>
-                  </li>
-                </ul>
-              </div>
+              <router-link to="stores/create" class="text-white " style="text-decoration: none;">Trở thành Nhà Bán Thuốc</router-link>
             </li>
           </ul>
         </nav>
@@ -185,139 +130,15 @@
                 <span class="badge bg-primary badge-number">0</span>
               </a>
 
-<!--              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate3d(-24.8px, 35.2px, 0px);" data-popper-placement="bottom-end">-->
-<!--                <li class="dropdown-header">-->
-<!--                  You have 4 new notifications-->
-<!--                  <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
+            </li>
 
-<!--                <li class="notification-item">-->
-<!--                  <i class="bi bi-exclamation-circle text-warning"></i>-->
-<!--                  <div>-->
-<!--                    <h4>Lorem Ipsum</h4>-->
-<!--                    <p>Quae dolorem earum veritatis oditseno</p>-->
-<!--                    <p>30 min. ago</p>-->
-<!--                  </div>-->
-<!--                </li>-->
+            <li class="nav-item dropdown">
 
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
-
-<!--                <li class="notification-item">-->
-<!--                  <i class="bi bi-x-circle text-danger"></i>-->
-<!--                  <div>-->
-<!--                    <h4>Atque rerum nesciunt</h4>-->
-<!--                    <p>Quae dolorem earum veritatis oditseno</p>-->
-<!--                    <p>1 hr. ago</p>-->
-<!--                  </div>-->
-<!--                </li>-->
-
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
-
-<!--                <li class="notification-item">-->
-<!--                  <i class="bi bi-check-circle text-success"></i>-->
-<!--                  <div>-->
-<!--                    <h4>Sit rerum fuga</h4>-->
-<!--                    <p>Quae dolorem earum veritatis oditseno</p>-->
-<!--                    <p>2 hrs. ago</p>-->
-<!--                  </div>-->
-<!--                </li>-->
-
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
-
-<!--                <li class="notification-item">-->
-<!--                  <i class="bi bi-info-circle text-primary"></i>-->
-<!--                  <div>-->
-<!--                    <h4>Dicta reprehenderit</h4>-->
-<!--                    <p>Quae dolorem earum veritatis oditseno</p>-->
-<!--                    <p>4 hrs. ago</p>-->
-<!--                  </div>-->
-<!--                </li>-->
-
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
-<!--                <li class="dropdown-footer">-->
-<!--                  <a href="#">Show all notifications</a>-->
-<!--                </li>-->
-
-<!--              </ul>&lt;!&ndash; End Notification Dropdown Items &ndash;&gt;-->
-
-            </li><!-- End Notification Nav -->
-
-<!--            <li class="nav-item dropdown">-->
-
-<!--              <a class="nav-link nav-icon text-white" href="#" data-bs-toggle="dropdown">-->
-<!--                <i class="bi bi-chat-left-text"></i>-->
-<!--                <span class="badge bg-success badge-number">3</span>-->
-<!--              </a>&lt;!&ndash; End Messages Icon &ndash;&gt;-->
-
-<!--              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">-->
-<!--                <li class="dropdown-header">-->
-<!--                  You have 3 new messages-->
-<!--                  <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
-
-<!--                <li class="message-item">-->
-<!--                  <a href="#">-->
-<!--                    <img src="" alt="" class="rounded-circle">-->
-<!--                    <div>-->
-<!--                      <h4>Maria Hudson</h4>-->
-<!--                      <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>-->
-<!--                      <p>4 hrs. ago</p>-->
-<!--                    </div>-->
-<!--                  </a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
-
-<!--                <li class="message-item">-->
-<!--                  <a href="#">-->
-<!--                    <img src="" alt="" class="rounded-circle">-->
-<!--                    <div>-->
-<!--                      <h4>Anna Nelson</h4>-->
-<!--                      <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>-->
-<!--                      <p>6 hrs. ago</p>-->
-<!--                    </div>-->
-<!--                  </a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
-
-<!--                <li class="message-item">-->
-<!--                  <a href="#">-->
-<!--                    <img src="" alt="" class="rounded-circle">-->
-<!--                    <div>-->
-<!--                      <h4>David Muldon</h4>-->
-<!--                      <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>-->
-<!--                      <p>8 hrs. ago</p>-->
-<!--                    </div>-->
-<!--                  </a>-->
-<!--                </li>-->
-<!--                <li>-->
-<!--                  <hr class="dropdown-divider">-->
-<!--                </li>-->
-
-<!--                <li class="dropdown-footer">-->
-<!--                  <a href="#">Show all messages</a>-->
-<!--                </li>-->
-
-<!--              </ul>&lt;!&ndash; End Messages Dropdown Items &ndash;&gt;-->
-
-<!--            </li>&lt;!&ndash; End Messages Nav &ndash;&gt;-->
+              <a class="nav-link nav-icon text-white" href="#" data-bs-toggle="dropdown">
+                <i class="bi bi-chat-left-text"></i>
+                <span class="badge bg-success badge-number">0</span>
+              </a>
+            </li>
 
             <li class="nav-item dropdown pe-3" v-if="auth">
 
@@ -337,10 +158,10 @@
                   <hr class="dropdown-divider">
                 </li>
                 <li>
-                  <a class="dropdown-item d-flex align-items-center" href="">
+                  <router-link to="/account/profile" class="dropdown-item d-flex align-items-center" href="">
                     <i class="bi bi-person"></i>
                     <span>Thông tin cá nhân</span>
-                  </a>
+                  </router-link>
                 </li>
                 <li>
                   <hr class="dropdown-divider">
@@ -393,33 +214,22 @@
               <router-link to="/" class="nav-link mx-2 active text-white">Trang Chủ</router-link>
             </li>
             <li class="nav-item">
-              <router-link to="/" class="nav-link mx-2 active text-white">Sản phẩm</router-link>
+              <router-link to="/products" class="nav-link mx-2 active text-white">Sản phẩm</router-link>
             </li>
-            <li class="nav-item" v-if="role === 'STORE'">
-              <router-link to="/" class="nav-link mx-2 active text-white">Thống kê</router-link>
+            <li class="nav-item">
+              <router-link to="/vouchers" class="nav-link mx-2  text-white">Khuyến mãi</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/stores" class="nav-link mx-2 active text-white">Cửa hàng</router-link>
             </li>
           </ul>
           <div class="d-none d-lg-flex align-items-center">
             <ul class="d-flex  align-items-center list-unstyled m-0">
-              <li>
-                <a href="" class="ms-3 text-white">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px">
-                    <use href="#user-circle" />
-                  </svg> </a>
-              </li>
-<!--              <li>-->
-<!--                <a href="" class="ms-3 text-white">-->
-<!--                  <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px">-->
-<!--                    <use href="#heart" />-->
-<!--                  </svg> </a>-->
-<!--              </li>-->
-
-              <li v-if="role === 'CUSTOMER'">
-                <a href="#" class="ms-3 text-white" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
-                   aria-controls="offcanvasCart">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px">
-                    <use href="#shopping-bag" />
-                  </svg> </a>
+              <li class="nav-link">
+                <router-link to="/carts" style="text-decoration: none" class="ms-3 text-white">
+                  <i class="bi bi-cart"></i> Giỏ hàng
+                  <span class="badge bg-success badge-number">{{cart}}</span>
+                </router-link>
               </li>
 
               <li>
@@ -436,60 +246,8 @@
 
         </div>
       </div>
-
-    </div>
-    <div class="container-fluid d-lg-none">
-      <div class="d-flex  align-items-end mt-3">
-        <ul class="d-flex  align-items-center list-unstyled m-0">
-          <li>
-            <a href="account.html" class="me-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px">
-                <use href="#user-circle" />
-              </svg> </a>
-          </li>
-          <li>
-            <a href="wishlist.html" class="me-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px">
-                <use href="#heart" />
-              </svg> </a>
-          </li>
-
-          <li class="">
-            <a href="#" class="me-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
-               aria-controls="offcanvasCart">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px">
-                <use href="#shopping-bag" />
-              </svg> </a>
-          </li>
-
-          <li>
-            <a href="#" class="me-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSearch"
-               aria-controls="offcanvasSearch">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="22px">
-                <use href="#search" />
-              </svg> </a>
-          </li>
-
-        </ul>
-      </div>
     </div>
   </nav>
-  <div class="modal" tabindex="-1" role="dialog" id="passwordModal">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Nhập mật khẩu</h5>
-        </div>
-        <div class="modal-body">
-          <input type="password" v-model="password" class="form-control" placeholder="Mật khẩu">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" @click="changeAccount(selectedItem, password)">Xác nhận</button>
-          <button type="button" class="btn btn-secondary" @click="closeTab" data-dismiss="modal">Đóng</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 <script>
 import {computed, onMounted, ref} from "vue";
@@ -498,26 +256,31 @@ import {useStore} from "vuex";
 import { useToast } from 'vue-toastification'
 import AuthService from "@/services/auth.service.js";
 import {useRouter} from "vue-router";
+import ProductService from "@/services/product.service.js";
+import CartService from "@/services/cart.service.js";
 import StoreService from "@/services/store.service.js";
-import ImageService from "@/services/image.service.js";
+import cart from "../views/Cart.vue";
+
 export default {
   name: "NavbarComponent",
+  computed: {
+    cart() {
+      return cart
+    }
+  },
   setup(){
     const toast = useToast()
+    const products = ref([])
     const store = useStore();
     const router = useRouter();
-    const role = computed(() => store.state.role);
     const auth =computed(()=>store.state.auth);
+    const cart = computed(()=>store.state.cart)
     const message = computed(() => store.state.message);
-    let listItem = ref([])
-    let listMyStore = ref([])
     onMounted(async ()=>{
-      await StoreService.getMyStore().then(response=>{
-        listItem.value = response.data
-        for(let item of listItem.value){
-          ImageService.getOne(item.avatar).then(res=>{
-            item.avatar = res.data
-            listMyStore.value.push(item)
+      ProductService.getAll().then(response=>{
+        for (let item of response.data){
+          ProductService.getOne(item.id).then(resItem=>{
+            products.value.push(resItem.data)
           })
         }
       })
@@ -527,6 +290,8 @@ export default {
         localStorage.removeItem('token');
         axios.defaults.headers.common['Authorization'] = '';
         await store.dispatch('setMessage','')
+        await store.dispatch('setRole','')
+        await store.dispatch('setCart','')
         await store.dispatch('setAuth',false);
         toast.success("Đăng xuất thành công.")
         await router.push('/');
@@ -534,45 +299,68 @@ export default {
         console.log(error.response.data)
       })
     }
-    return {
-      listItem,listMyStore,
-      auth,
-      toast,
-      role,
-      logout,
-      message
-    }
+    return {auth, toast, logout, message,products,cart}
   },
   data() {
     return {
-      password: '',
-      item:'',
-      selectedItem: null
+      inputData: '',
+      cardData: null,
     };
   },
-  methods:{
-    openModal(item) {
-      this.selectedItem = item;
-      $('#passwordModal').modal('show');
+  methods: {
+    slugify(title) {
+      var slug;
+      slug = title.toLowerCase();
+      slug = slug.replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a');
+      slug = slug.replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e');
+      slug = slug.replace(/i|í|ì|ỉ|ĩ|ị/gi, 'i');
+      slug = slug.replace(/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi, 'o');
+      slug = slug.replace(/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi, 'u');
+      slug = slug.replace(/ý|ỳ|ỷ|ỹ|ỵ/gi, 'y');
+      slug = slug.replace(/đ/gi, 'd');
+      slug = slug.replace(/\`|\~|\!|\@|\#|\||\$|\%|\^|\&|\*|\(|\)|\+|\=|\,|\.|\/|\?|\>|\<|\'|\"|\:|\;|_/gi, '');
+      slug = slug.replace(/ /gi, "-");
+      slug = slug.replace(/\-\-\-\-\-/gi, '-');
+      slug = slug.replace(/\-\-\-\-/gi, '-');
+      slug = slug.replace(/\-\-\-/gi, '-');
+      slug = slug.replace(/\-\-/gi, '-');
+      slug = '@' + slug + '@';
+      slug = slug.replace(/\@\ |\ \@|\@/gi, '');
+      return slug;
     },
-    closeTab(){
-      $('#passwordModal').modal('hide');
-    },
-    async changeAccount(item, password){
-      this.item = {
-        password: password, type: 'STORE', account: item.id
+    async fetchData() {
+      if (!this.inputData) {
+        this.cardData = null;
+        return;
       }
-      console.log(item.id)
-      $('#passwordModal').modal('hide');
-      await AuthService.switch(this.item).then(res =>{
-        this.toast.success(res.data.message)
-      }).catch(err=>{
-        // this.toast.error("Chuyển đổi tài khoản thất bại.")
-        this.toast.error(err.response.data.detail)
-      })
-    }
 
-  }
+      const term = this.slugify(this.inputData);
+      if (!term) {
+        this.cardData = this.products;
+        return;
+      }
+
+      this.cardData = this.products.filter(product => {
+        if (product.name.toLowerCase().includes(term)) {
+          return true;
+        }
+        if (product.uses.some(use => this.slugify(use.name).includes(term))) {
+          return true;
+        }
+        if (product.categories.some(category => this.slugify(category.name).includes(term))) {
+          return true;
+        }
+        if (this.slugify(product.manufacturer.name).includes(term)) {
+          return true;
+        }
+        if (product.contraindications.some(contra => this.slugify(contra.name).includes(term))) {
+          return true;
+        }
+        return false;
+      });
+    },
+  },
+
 }
 </script>
 <style scoped>

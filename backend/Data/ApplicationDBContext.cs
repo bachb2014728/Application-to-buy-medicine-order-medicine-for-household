@@ -16,6 +16,7 @@ namespace backend.Data
         public DbSet<Contraindication> Contraindications { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Receiver> Receivers { get; set; }
         public DbSet<DosageForm> DosageForms { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Manufacturer> Manufacturers { get; set; }
@@ -26,10 +27,7 @@ namespace backend.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
-        public DbSet<OrderVouchers> OrderVouchers { get; set; }
         public DbSet<CustomerVouchers> CustomerVouchers { get; set; }
-        public DbSet<PaymentMethod> PaymentMethods { get; set; }
-        public DbSet<Payment> Payments { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

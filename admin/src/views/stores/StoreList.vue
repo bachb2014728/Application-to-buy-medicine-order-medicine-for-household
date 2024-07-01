@@ -8,19 +8,22 @@
           <th>STT</th>
           <th>Tên nhà thuốc</th>
           <th>Ảnh đại diện</th>
-          <th>Người theo dõi</th>
+<!--          <th>Số sản phẩm</th>-->
+<!--          <th>Doanh thu</th>-->
           <th>Trạng thái</th>
           <th>Actions</th>
         </tr>
         </thead>
-        <tbody class="table-border-bottom-0" >
+        <tbody class="table-border-bottom-0">
           <tr v-for="(item, index) in listItem" :key="index" :class="{ 'bg-light': item.status === 'BLOCK' }">
             <td>{{index+1}}</td>
             <td><span class="fw-medium">{{item.name}}</span></td>
-            <td v-if="images[index]">
-              <img :src="'data:image/jpeg;base64,' + images[index].file" alt="Avatar" class="rounded-circle" style="width: 2rem">
+            <td >
+              <img v-if="images[index]" :src="'data:image/jpeg;base64,' + images[index].file" alt="Avatar" class="rounded-circle" style="width: 2rem">
+              <img v-else src="@/assets/image/user.png" alt="Avatar" class="rounded-circle" style="width: 1.5rem">
             </td>
-            <td>{{item.followers.length}} follower</td>
+<!--            <td>{{item.products.length}}</td>-->
+<!--            <td>{{item.totalPrice}}</td>-->
             <td>
               <span v-if="item.status === 'ACTIVE'" class="badge bg-label-success me-1">Hoạt động</span>
               <span v-if="item.status === 'BLOCK'" class="badge bg-label-danger me-1">Tạm khóa</span>
@@ -47,6 +50,8 @@ import {onMounted, ref} from "vue";
 import StoreService from "@/services/store.service.js";
 import {useToast} from "vue-toastification";
 import ImageService from "@/services/image.service.js";
+import ProductService from "@/services/product.service.js";
+import OrderService from "@/services/order.service.js";
 
 export default {
   name: "StoreList",
@@ -59,9 +64,18 @@ export default {
     const listItem = ref([])
     const message = ref()
     onMounted(async ()=>{
-      await StoreService.getAll().then(response=>{
+      StoreService.getAll().then(response=>{
         listItem.value = response.data
         for(let i = 0 ; i < response.data.length ; i++){
+          // let products = []
+          // let orders = []
+          // ProductService.getAllByStore(response.data[i].url).then(res=>{products = res.data}).catch(err=>{})
+          // OrderService.getAllOrderOfStore(response.data[i].id).then(resOrder=>{orders = resOrder.data})
+          // listItem.value.push({
+          //   ...response.data[i],
+          //   products : products,
+          //   totalPrice: orders.data.reduce((acc,order)=> acc + order.totalPrice,0)
+          // })
           let id = response.data[i].avatar;
           ImageService.getOne(id).then(res=>{
             images.value.push(res.data)

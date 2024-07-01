@@ -7,6 +7,7 @@ class AuthService {
     setToken(token) {
         this.token = token;
         localStorage.setItem('token', token);
+        this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
     async signup(data) {
         return (await this.api.post("/register", data));
@@ -31,13 +32,6 @@ class AuthService {
     }
     async logout(){
         return (await this.api.get("/logout",{
-            headers: {
-                'Authorization': `Bearer ${this.token}`
-            }
-        }));
-    }
-    async switch(data){
-        return (await this.api.post("/switch",data,{
             headers: {
                 'Authorization': `Bearer ${this.token}`
             }

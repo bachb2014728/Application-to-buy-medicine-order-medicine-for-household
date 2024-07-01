@@ -1,5 +1,4 @@
 using backend.Dto.Auth;
-using backend.Dto.Store;
 using backend.Helper;
 using backend.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -45,14 +44,6 @@ namespace backend.Controller
 
             return Ok(response);
         }
-        [HttpPost("switch")]
-        [Authorize]
-        public async Task<IActionResult> Switch([FromBody] ModeDto mode)
-        {
-            if (!ModelState.IsValid){return BadRequest(ModelState);}
-            var response = await _authentication.Switch(mode);
-            return Ok(response);
-        }
 
         [HttpGet("logout")]
         [Authorize]
@@ -71,13 +62,17 @@ namespace backend.Controller
             }
         
             var response = await _authentication.Profile();
-            return response switch
-            {
-                CustomerDto customer => Ok(customer),
-                StoreDto store => Ok(store),
-                AdminDto admin => Ok(admin),
-                _ => BadRequest("Không tìm thế kiểu DTO")
-            };
+            return Ok(response);
+        }
+        [HttpGet("profileadmin")]
+        [Authorize]
+        public async Task<IActionResult> ProfileOfAdmin(){
+            if (!ModelState.IsValid){
+                return BadRequest(ModelState);
+            }
+        
+            var response = await _authentication.ProfileOfAdmin();
+            return Ok(response);
         }
     }
 }

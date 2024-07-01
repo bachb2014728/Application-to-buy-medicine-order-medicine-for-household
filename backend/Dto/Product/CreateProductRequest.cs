@@ -18,7 +18,7 @@ namespace backend.Dto.Product
         public required int ManufacturerId { get; set; }
         public required List<int> Contraindications { get; set; } = [];
         public required List<int> DosageForms { get; set; } = [];
-        public bool? Status { get; set; }
+        public required bool Status { get; set; }
         public List<int>? Categories { get; set; } = [];
 
         public List<int>? Images { get; set; } = [];

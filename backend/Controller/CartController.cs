@@ -17,10 +17,25 @@ public class CartController(ICart service) : ControllerBase
         var response = await _service.GetAllByCustomer();
         return Ok(response);
     }
+
+    [HttpPut("checked")]
+    public async Task<IActionResult> Checked([FromBody] IsChecked isChecked)
+    {
+        var response = await _service.Checked(isChecked);
+        return Ok(response);
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CartCreate cart)
     {
         var response = await _service.AddToCart(cart);
+        return Ok(response);
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update([FromBody] CartUpdate cart, [FromRoute] int id)
+    {
+        var response = await _service.Update(cart, id);
         return Ok(response);
     }
 
@@ -29,5 +44,12 @@ public class CartController(ICart service) : ControllerBase
     {
         await _service.DeleteOne(id);
         return NoContent();
+    }
+
+    [HttpGet("cart-is-checked")]
+    public async Task<IActionResult> GetCartIsChecked()
+    {
+        var response = await _service.CartIsChecked();
+        return Ok(response);
     }
 }

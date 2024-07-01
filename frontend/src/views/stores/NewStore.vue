@@ -18,21 +18,21 @@
         <div class="row mb-3">
           <div class="col-sm">
             <label for="province" class="form-label">Tỉnh thành phố</label>
-            <select id="province" name="province" class="form-select mb-3" v-model="selectedCity" @change="updateCityId" required aria-label="select example">
+            <select id="province" name="province" class="form-select mb-3" v-model="selectedCity" @change="updateCityId" >
               <option value="" disabled selected>Chọn tỉnh thành</option>
               <option v-for="(city, index) in cities" :value="city" :key="index">{{ city.name }}</option>
             </select>
           </div>
           <div class="col-sm">
             <label for="district" class="form-label">Quận huyện</label>
-            <select id="district" name="district" class="form-select mb-3" v-model="selectedDistrict" @change="updateDistrictId" required aria-label="select example">
+            <select id="district" name="district" class="form-select mb-3" v-model="selectedDistrict" @change="updateDistrictId" >
               <option value="" disabled selected>Chọn quận huyện</option>
               <option v-for="(district, index) in districts" :value="district" :key="index">{{ district.name }}</option>
             </select>
           </div>
           <div class="col-sm">
             <label for="ward" class="form-label">Phường xã</label>
-            <select id="ward" name="ward" class="form-select mb-3" v-model="selectedWard" @change="updateWardId" required aria-label="select example">
+            <select id="ward" name="ward" class="form-select mb-3" v-model="selectedWard" @change="updateWardId" >
               <option value="" disabled selected>Chọn phường xã</option>
               <option v-for="(ward, index) in wards" :value="ward" :key="index">{{ ward.name }}</option>
             </select>
@@ -46,7 +46,7 @@
           </div>
           <div class="col-sm">
             <label for="address" class="form-label">Địa chỉ nhà thuốc</label>
-            <input v-model="data.address" type="text" class="form-control" :class="{ 'is-invalid': errors.address}" disabled>
+            <input v-model="data.address" type="text" class="form-control" :class="{ 'is-invalid': errors.address}">
           </div>
         </div>
         <div class="row mb-3">
@@ -182,7 +182,6 @@ export default {
       }else{
         await StoreClientService.create(this.data).then(response =>{
           this.toast.success("Thêm nhà thuốc mới thành công.");
-          router.push("/")
         }).catch(error=>{
           this.toast.error("Thêm nhà thuốc thất bại.");
         })

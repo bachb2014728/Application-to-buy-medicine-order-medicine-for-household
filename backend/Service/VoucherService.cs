@@ -57,15 +57,16 @@ public class VoucherService(ApplicationDbContext context,ConvertInformation conv
         await _context.Vouchers.AddAsync(newItem);
         
         var customers = await _context.Customers.ToListAsync();
-        foreach (var notification in customers.Select(customer => new Notification()
-                 {
-                     CustomerId = customer.Id,
-                     Message = $"Voucher {newItem.Title} có 1 mã khuyến mãi mới.",
-                     IsRead = false,
-                     CreatedOn = _now
-                 }))
+        foreach (var customer in customers)
         {
-            await _context.Notifications.AddAsync(notification);
+            var item = new Notification()
+            {
+                CustomerId = customer.Id,
+                Message = $"Voucher {newItem.Title} có 1 mã khuyến mãi mới.",
+                IsRead = false,
+                CreatedOn = _now
+            };
+            await _context.Notifications.AddAsync(item);
             await _context.SaveChangesAsync();
         }
         await _context.SaveChangesAsync();
@@ -101,7 +102,8 @@ public class VoucherService(ApplicationDbContext context,ConvertInformation conv
                      CreatedOn = _now
                  }))
         {
-            _context.Notifications.Add(notification);
+            await _context.Notifications.AddAsync(notification);
+            await _context.SaveChangesAsync();
         }
         
         await _context.SaveChangesAsync();
@@ -111,13 +113,6 @@ public class VoucherService(ApplicationDbContext context,ConvertInformation conv
     public async Task<ApiObject?> DeleteOne(int id)
     {
         var voucher = await VoucherExist(id);
-        var listOrderVouchers = await _context.OrderVouchers.Where(or => or.VoucherId == id).ToListAsync();
-        
-        foreach (var item in listOrderVouchers)
-        {
-            _context.OrderVouchers.Remove(item);
-            await _context.SaveChangesAsync();
-        }
 
         var listCustomerVouchers = await _context.CustomerVouchers.Where(cu => cu.VoucherId == id).ToListAsync();
         foreach (var item in listCustomerVouchers)
@@ -134,17 +129,17 @@ public class VoucherService(ApplicationDbContext context,ConvertInformation conv
         };
     }
 
-    public async Task<ApiObject?> AddToVoucher(int id)
+    public async Task<ApiObject?> AddToVoucher(AddToVoucher addToVoucher)
     {
         var customer = await _convert.ToCustomerFormUser(GlobalVariables.Token);
-        var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Id == id);
+        var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Id == addToVoucher.VoucherId);
         if (voucher == null)
         {
-            throw new NotFoundException($"Không tìm thấy khuyến mãi với id = {id}");
+            throw new NotFoundException($"Không tìm thấy khuyến mãi với id = {addToVoucher.VoucherId}");
         }
 
         var customerVoucherExist = await _context.CustomerVouchers
-            .FirstOrDefaultAsync(x => x.VoucherId == id && x.CustomerId == customer.Id);
+            .FirstOrDefaultAsync(x => x.VoucherId == addToVoucher.VoucherId && x.CustomerId == customer.Id);
         if (customerVoucherExist != null)
         {
             throw new AlreadyExistsException("Mã khuyến mãi đã được lưu trước đó.");
@@ -163,11 +158,11 @@ public class VoucherService(ApplicationDbContext context,ConvertInformation conv
         };
     }
 
-    public async Task<IEnumerable<VoucherItem>> MyListVoucher()
+    public async Task<IEnumerable<VoucherItemOfCustomer>> MyListVoucher()
     {
         var customer = await _convert.ToCustomerFormUser(GlobalVariables.Token);
         var listItem = await _context.CustomerVouchers
-            .Where(v => v.CustomerId == customer.Id && v.IsUsed == false)
+            .Where(v => v.CustomerId == customer.Id)
             .Select(v=>v.VoucherId)
             .ToListAsync();
         if (listItem.Count == 0)
@@ -175,31 +170,46 @@ public class VoucherService(ApplicationDbContext context,ConvertInformation conv
             throw new NotFoundException("Không tìm thấy dữ liệu.");
         }
         var listVoucher = await _context.Vouchers.Where(x => listItem.Contains(x.Id)).ToListAsync();
-        return listVoucher.Select(ToVoucherItem);
-    }
-
-
-    /*public void NotifyVouchersExpiringSoon()
-    {
-        var tomorrow = DateTime.UtcNow.AddHours(7).AddDays(1);
-        var vouchersExpiringSoon = _context.Vouchers.Where(v => v.EndTime.Date == tomorrow.Date).ToList();
-
-        foreach (var notification in from voucher in vouchersExpiringSoon let customers = _context.CustomerVouchers
-                     .Where(cv => cv.VoucherId == voucher.Id)
-                     .Select(cv => cv.CustomerId)
-                     .ToList() from notification in customers.Select(customerId => new Notification
-                 {
-                     CustomerId = customerId,
-                     Message = $"Voucher {voucher.Title} sẽ hết hạn vào ngày mai.",
-                     IsRead = false,
-                     CreatedOn = _now
-                 }) select notification)
+        if (listVoucher.Count == 0)
         {
-            _context.Notifications.Add(notification);
+            throw new NotFoundException("Không tìm thấy dữ liệu.");
         }
-
-        _context.SaveChanges();
-    }*/
+        List<VoucherItemOfCustomer> vouchers = [];
+        foreach (var voucher in listVoucher)
+        {
+            var cusVoucher = await _context.CustomerVouchers
+                .FirstOrDefaultAsync(x => x.VoucherId == voucher.Id);
+            if (cusVoucher != null)
+            {
+                vouchers.Add(ToVoucherItemOfCustomer(voucher,cusVoucher.IsUsed));
+            }
+        }
+        return vouchers;
+    }
+    private static VoucherItemOfCustomer ToVoucherItemOfCustomer(Voucher voucher,bool isUsed)
+    {
+        
+        return new VoucherItemOfCustomer()
+        {
+            Id = voucher.Id,
+            Title = voucher.Title,
+            Code = voucher.Code,
+            DiscountAmount = voucher.DiscountAmount,
+            DiscountPercentage = voucher.DiscountPercentage,
+            StartTime = voucher.StartTime,
+            isUsed = isUsed,
+            EndTime = voucher.EndTime,
+            IsGlobal = voucher.StoreId == null ? true : false,
+            StoreId = voucher.StoreId
+        };
+    }
+    
+    public async Task<IEnumerable<VoucherItem>?> MyVoucherOfStore(int storeId)
+    {
+        var vouchers = await _context.Vouchers
+            .Where(x => x.StoreId == storeId).ToListAsync();
+        return vouchers.Select(ToVoucherItem);
+    }
 
     private async Task<VoucherDto> ToVoucherDto(Voucher voucher)
     {
@@ -263,7 +273,8 @@ public class VoucherService(ApplicationDbContext context,ConvertInformation conv
             DiscountPercentage = voucher.DiscountPercentage,
             StartTime = voucher.StartTime,
             EndTime = voucher.EndTime,
-            IsGlobal = voucher.StoreId == null ? true : false
+            IsGlobal = voucher.StoreId == null ? true : false,
+            StoreId = voucher.StoreId
         };
     }
 

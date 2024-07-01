@@ -53,6 +53,7 @@ namespace backend.Service
         public async Task<Store> GetOne(int id)
         {
             var item = await _context.Stores
+                .Where(x=>x.Status == "ACTIVE")
                 .Include(x=>x.Background)
                 .Include(x=>x.Avatar)
                 .FirstOrDefaultAsync(x=>x.Id == id) ?? throw new NotFoundException($"Không thể tìm thấy dữ liệu với : {id}");
@@ -62,6 +63,7 @@ namespace backend.Service
         public async Task<StoreDto> GetOneByURL(string url)
         {
             var item = await _context.Stores
+                .Where(x=>x.Status == "ACTIVE")
                 .Include(x=>x.Background)
                 .Include(x=>x.CreatedBy)
                 .Include(x=>x.Avatar)
@@ -71,7 +73,7 @@ namespace backend.Service
 
         private async Task<StoreDto> ToStoreDto(Store store)
         {
-            var customer = await _context.Customers
+            var customer = await _context.Customers.Include(customer => customer.User)
                 .FirstOrDefaultAsync(x => x.User == store.CreatedBy);
             if (customer == null)
             {
@@ -150,8 +152,7 @@ namespace backend.Service
                 URL = storeCreate.URL,
                 Address = storeCreate.Address,
                 Status = "ACTIVE",
-                Mode = false,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow.AddHours(7),
                 CreatedBy = _convert.ToAppUser(GlobalVariables.Token)
             };
             await _context.Stores.AddAsync(store);
@@ -167,10 +168,10 @@ namespace backend.Service
                 throw new AlreadyExistsException($"{storeUpdate.Name} đã tồn tại.");
             }
             
-            store!.Name = storeUpdate.Name!;
-            store.Address = storeUpdate.Address!;
+            store.Name = storeUpdate.Name;
+            store.Address = storeUpdate.Address;
             store.Info = storeUpdate.Info;
-            store.URL = storeUpdate.URL!;
+            store.URL = storeUpdate.URL;
             await _context.SaveChangesAsync();
             return store;
         }
@@ -179,7 +180,7 @@ namespace backend.Service
         {
             var store = await _context.Stores.FirstOrDefaultAsync(x=>x.URL == url) ?? throw new NotFoundException("Không tìm thấy dữ liệu.");
             var image = await _context.Images.FirstOrDefaultAsync(x=>x.Id == imageId.Image) ?? throw new NotFoundException("Không tìm thấy dữ liệu.");
-            store!.Avatar = image;
+            store.Avatar = image;
             await _context.SaveChangesAsync();
             return image.File;                                                        
             
@@ -189,7 +190,7 @@ namespace backend.Service
         {
             var store = await _context.Stores.FirstOrDefaultAsync(x=>x.URL == url) ?? throw new NotFoundException("Không tìm thấy dữ liệu.");
             var image = await _context.Images.FirstOrDefaultAsync(x=>x.Id == imageId.Image) ?? throw new NotFoundException("Không tìm thấy dữ liệu.");
-            store!.Background = image;
+            store.Background = image;
             await _context.SaveChangesAsync();
             return image.File;         
         }

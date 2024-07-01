@@ -12,6 +12,8 @@ public class Voucher
     public DateTime CreatedOn { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
+    public List<int>? OrderIds { get; set; } = [];
+    public List<Order>? Orders { get; set; } = [];
     public int? StoreId { get; set; }
     public Store? Store { get; set; }
 }

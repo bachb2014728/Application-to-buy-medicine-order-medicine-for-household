@@ -10,6 +10,7 @@ public interface IVoucher
     Task<VoucherDto?> Create(VoucherCreate voucherCreate);
     Task<VoucherDto?> Update(VoucherUpdate voucherUpdate, int id);
     Task<ApiObject?> DeleteOne(int id);
-    Task<ApiObject?> AddToVoucher(int id);
-    Task<IEnumerable<VoucherItem>> MyListVoucher();
+    Task<ApiObject?> AddToVoucher(AddToVoucher addToVoucher);
+    Task<IEnumerable<VoucherItemOfCustomer>> MyListVoucher();
+    Task<IEnumerable<VoucherItem>?> MyVoucherOfStore(int storeId);
 }

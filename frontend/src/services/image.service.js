@@ -7,13 +7,19 @@ class ImageClientService {
     async uploadImage(data) {
         return (await this.api.post("/", data,{
             headers: {
-                'Authorization': `Bearer ${this.token}`,
                 'Content-Type': 'multipart/form-data'
             }
         }));
     }
     async getOne(id){
         return (await this.api.get(`${id}`,{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }));
+    }
+    async delete(id){
+        return (await this.api.delete(`${id}`,{
             headers: {
                 'Authorization': `Bearer ${this.token}`,
                 'Content-Type': 'multipart/form-data'

@@ -51,7 +51,7 @@
   <div class="card" v-if="store">
     <div class="card-body">
       <h5 class="card-title">Giới thệu nhà thuốc :</h5>
-      <p>{{store.info}}</p>
+      <ConvertCKEDITOR :data="store.info"/>
     </div>
   </div>
   <div v-if="store">
@@ -69,10 +69,11 @@ import StoreService from "@/services/store.service.js";
 import ImageService from "@/services/image.service.js";
 import ListVoucherComponent from "@/components/ListVoucherComponent.vue";
 import ListProductComponent from "@/components/ListProductComponent.vue";
+import ConvertCKEDITOR from "@/components/ConvertCKEDITOR.vue";
 
 export default {
   name: "StoreOverview",
-  components: {ListProductComponent, ListVoucherComponent},
+  components: {ConvertCKEDITOR, ListProductComponent, ListVoucherComponent},
   mounted() {
     document.title='Xem chi tiết nhà thuốc'
   },

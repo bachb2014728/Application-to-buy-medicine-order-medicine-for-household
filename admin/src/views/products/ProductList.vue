@@ -5,7 +5,6 @@
       <table class="table">
         <thead class="table-light">
         <tr>
-          <th>STT</th>
           <th>Tên sản phẩm</th>
           <th>Hình ảnh</th>
           <th>Giá bán</th>
@@ -15,15 +14,16 @@
         </tr>
         </thead>
         <tbody class="table-border-bottom-0">
-        <tr v-if="products" v-for="(item, index) in products" :key="index">
-          <td>{{index+1}}</td>
+        <tr v-if="listImage" v-for="(item, index) in products" :key="index">
           <td><span class="fw-medium">{{item.name}}</span></td>
           <td>
-            <img :src="'data:image/jpeg;base64,' + listImage[index].file" alt="Avatar" style="width: 3rem">
+            <img :src="'data:image/jpeg;base64,' + listImage.find(img=>img.productId === item.id)['image'].file" alt="Avatar" style="width: 3rem">
           </td>
           <td>{{item.price}}</td>
           <td>{{item.createdBy.name}}</td>
-          <td>{{item.status}}</td>
+          <td>
+            <span class="badge bg-success" v-if="item.status">Hoạt động</span>
+          </td>
           <td>
             <router-link :to="`products/${item.url}`" class="btn btn-secondary btn-sm me-3">
               <i class="bi bi-eye"></i>
@@ -65,7 +65,7 @@ export default {
         products.value = response.data
         for(let item of products.value){
           ImageService.getOne(item.imageId).then(res=>{
-            listImage.value.push(res.data)
+            listImage.value.push({image:res.data, productId: item.id})
           })
         }
       }).catch(err=>{
@@ -82,16 +82,20 @@ export default {
   },
   methods:{
     confirmDelete(item) {
-      if (window.confirm('Bạn có chắc chắn khóa tài khoản này không ?')) {
+      if (window.confirm('Bạn có chắc chắn xóa dữ liệu này không ?')) {
         this.deleteItem(item);
       }
     },
     async deleteItem(item) {
-      await ProductService.deleteOne(item.id).then(async response =>{
-        this.toast.success(response.data.message)
-      }).catch(error=>{
-        this.toast.error(error.response.data.message)
-      })
+      let index = this.products.findIndex(pro=>pro.id === item.id)
+      if (index > -1){
+        ProductService.deleteOne(item.id).then(async response =>{
+          this.products.splice(index,1);
+          this.toast.success(response.data.message)
+        }).catch(error=>{
+          this.toast.error(error.response.data.message)
+        })
+      }
     }
   }
 }

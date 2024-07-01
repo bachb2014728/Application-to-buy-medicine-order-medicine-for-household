@@ -17,7 +17,7 @@ import CKEditor from '@ckeditor/ckeditor5-vue';
 async function checkAuthentication() {
     const token = sessionStorage.getItem('token')
     if (token != null ) {
-        await AuthService.profile().then(async response => {
+        await AuthService.profileAdmin().then(async response => {
             await store.dispatch('setMessage', response.data.username);
             await store.dispatch('setAuth', true);
         }).catch(async error => {
